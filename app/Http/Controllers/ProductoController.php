@@ -19,4 +19,18 @@ class ProductoController extends Controller
         }
         return response('No se encontro', 404);
     }
+
+    public function crearProducto(Request $request){
+        $data = $request->validate([
+            'nombre'=>'required|string',
+            'cantidad'=>'required|numeric',
+            'precio'=>'required|numeric|min:1',
+            'descripcion'=>'required|string|max:200'
+        ]);
+        $producto = Producto::create($data);
+        return response([
+            'Mensaje' => 'El producto se creo',
+            'id'=>$producto['id']
+        ], 201);
+    }
 }
