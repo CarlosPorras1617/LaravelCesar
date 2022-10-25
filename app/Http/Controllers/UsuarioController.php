@@ -7,52 +7,57 @@ use Illuminate\Http\Request;
 
 class UsuarioController extends Controller
 {
-    public function crearUsuario(Request $request){
+    public function crearUsuario(Request $request)
+    {
+
         //crear usuarios en base de datos de manera correcta
         //$data = $request->all();
         //validar los datos para que sean correctos
-        $data = $request->validate([
-            'nombre' => 'required|string',
-            'email' => 'required|string|email|unique:usuario',
-            'password' => 'required|string|min:3',
-            'edad' => 'nullable|numeric'
-        ]);
+        $data = $request->validate($this->validateRequest());
         $usuario = Usuario::create($data);
         return response([
-            'Mensaje'=>'El usuario se creo de manera exitosa',
-            'id'=>$usuario['id']
+            'Mensaje' => 'El usuario se creo de manera exitosa',
+            'id' => $usuario['id']
         ], 201);
     }
-    public function modificarUsuario($id, Request $request){
+
+    public function modificarUsuario($id, Request $request)
+    {
         //buscar usuario con id
         $usuario = Usuario::find($id);
-        return $usuario;
+        //return $usuario;
         //validar que exista el usuario
         if (!$usuario) {
             return response([
-                'message'=> 'El usuario con el ID '.$id. ' No existe en la base de datos'
-            ],404);
+                'message' => 'El usuario con el ID ' . $id . ' No existe en la base de datos'
+            ], 404);
         }
-
         //si existe el usuario
-        $data = $request->validate([
-            'nombre' => 'required|string',
-            'email' => 'required|string|email|unique:usuario',
-            'password' => 'required|string|min:3',
-            'edad' => 'nullable|numeric'
-        ]);
+        $data = $request->validate($this->validateRequest());
 
         //ya esta validado los cambios
         $usuario->update($data);
         return response([
-            'message'=>'Se modifico el usuario con exito'
-        ],201);
+            'message' => 'Se modifico el usuario con exito'
+        ], 201);
     }
 
-    public function eliminarUsuario($id){
-        return 'Se elimino el usuario' . $id;
+    public function eliminarUsuario($id)
+    {
+        $usuario = Usuario::find($id);
+        if (!$usuario) {
+            return response([
+                'message' => 'El usuario con el id ' . $id . ' no existe en la base de datos'
+            ], 404);
+        }
+        //se elimina
+        $usuario->delete();
+        return response([
+            'message' => 'Se elimino con exito'
+        ]);
     }
-    public function obtenerUsuarios(){
+    public function obtenerUsuarios()
+    {
 
         //paginacion de registros
         //$usuarios = Usuario::paginate(40);
@@ -79,5 +84,16 @@ class UsuarioController extends Controller
         //$usuarios = Usuario::where('edad', '=',0)->orWhere('edad','<',22)->get();
         $usuarios = Usuario::all();
         return $usuarios;
+    }
+
+    //factorizar codigo
+    private function validateRequest()
+    {
+        return [
+            'nombre' => 'required|string',
+            'email' => 'required|string|email|unique:usuarios',
+            'password' => 'required|string|min:3',
+            'edad' => 'nullable|numeric'
+        ];
     }
 }

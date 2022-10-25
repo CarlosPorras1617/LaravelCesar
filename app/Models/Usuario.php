@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 //en singular
 class Usuario extends Model
 {
-    //protected $table = 'usuario';
+    protected $table = 'usuarios';
     //para insertar datos
     protected $fillable = [
         'nombre',
