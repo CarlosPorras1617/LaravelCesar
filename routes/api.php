@@ -3,6 +3,7 @@ use App\Http\Controllers\EstudianteController;
 use App\Http\Controllers\DocenteController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\UsuarioController;
+use App\Http\Controllers\VentaController;
 use App\Models\Estudiante;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -18,19 +19,28 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::middleware('auth:sanctum')->group(function() {
+    //todo protegido
+    Route::post('/usuarios',[UsuarioController::class,'crearUsuario']);
+    Route::post('/usuarios/login/',[UsuarioController::class,'iniciarSesion']);
+    Route::put('/usuarios/{id}', [UsuarioController::class, 'modificarUsuario']);
+    //para mandar datos en la uri dinamicos no estaticos
+    Route::delete('/usuarios/{id}',[UsuarioController::class, 'eliminarUsuario']);
+    Route::get('/usuarios',[UsuarioController::class, 'obtenerUsuarios']);
+
+    Route::get('/ventas',[VentaController::class, 'obtenerVentas']);
+    Route::get('/ventas/{id}', [VentaController::class, 'obtenerVenta']);
+    Route::post('/ventas', [VentaController::class, 'crearVenta']);
+    Route::put('/ventas/{id}', [VentaController::class, 'actualizarVenta']);
+    Route::delete('/ventas/{id}', [VentaController::class, 'eliminarVenta']);
+
+    Route::get('/productos',[ProductoController::class, 'obtenerProductos']);
+    Route::get('/productos/{id}', [ProductoController::class, 'obtenerProducto']);
+    Route::post('/productos', [ProductoController::class, 'crearProducto']);
+    Route::put('/productos/{id}', [ProductoController::class, 'actualizarProducto']);
+    Route::delete('/productos/{id}', [ProductoController::class, 'eliminarProducto']);
 });
-Route::post('/usuarios',[UsuarioController::class,'crearUsuario']);
-Route::put('/usuarios/{id}', [UsuarioController::class, 'modificarUsuario']);
-//para mandar datos en la uri dinamicos no estaticos
-Route::delete('/usuarios/{id}',[UsuarioController::class, 'eliminarUsuario']);
-Route::get('/usuarios',[UsuarioController::class, 'obtenerUsuarios']);
 
-
-Route::get('/productos',[ProductoController::class, 'obtenerProductos']);
-Route::get('/productos/{id}', [ProductoController::class, 'obtenerProducto']);
-Route::post('/productos', [ProductoController::class, 'crearProducto']);
 
 Route::get('/docentes/{matricula}', [DocenteController::class, 'show']);
 

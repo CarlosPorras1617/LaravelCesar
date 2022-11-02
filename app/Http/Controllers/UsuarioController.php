@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Usuario;
 use Illuminate\Http\Request;
+use PharIo\Manifest\Email;
 
 class UsuarioController extends Controller
 {
@@ -19,6 +20,19 @@ class UsuarioController extends Controller
             'Mensaje' => 'El usuario se creo de manera exitosa',
             'id' => $usuario['id']
         ], 201);
+    }
+
+    public function iniciarSesion(Request $request){
+        $data = $request->validate($this->validateLoginRequest());
+        $usuario = Usuario::where('email', '=', $data['email'])->where('password', '=', $data['password'])->first();
+        if (!$usuario) {
+            return response(['Usuario NO ENCONTRADO'],404);
+        }
+        $token = $usuario->createToken('token-user')->plainTextToken;
+        return Response([
+            'usuario'=>$usuario,
+            'token'=>$token
+        ]);
     }
 
     public function modificarUsuario($id, Request $request)
@@ -94,6 +108,14 @@ class UsuarioController extends Controller
             'email' => 'required|string|email|unique:usuarios',
             'password' => 'required|string|min:3',
             'edad' => 'nullable|numeric'
+        ];
+    }
+
+    private function validateLoginRequest()
+    {
+        return [
+            'email' => 'required|string|email|',
+            'password' => 'required|string|min:3',
         ];
     }
 }
