@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('email', 50)->unique();
             $table->string('password');
             $table->integer('edad')->nullable();
+            $table->string('codigo_verificacion');
             $table->timestamps();
         });
     }

@@ -18,15 +18,21 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+Route::post('/usuarios',[UsuarioController::class,'crearUsuario']);
+Route::put('/usuarios/examen/{id}', [UsuarioController::class, 'generarCodigoVerificacion']);
+Route::put('/usuarios/cambiar/{id}', [UsuarioController::class, 'cambiarPassword']);
+Route::post('/usuarios/login/',[UsuarioController::class,'iniciarSesion']);
+Route::put('/usuarios/{id}', [UsuarioController::class, 'modificarUsuario']);
+//para mandar datos en la uri dinamicos no estaticos
+Route::delete('/usuarios/{id}',[UsuarioController::class, 'eliminarUsuario']);
+Route::get('/usuarios',[UsuarioController::class, 'obtenerUsuarios']);
+
+
 
 Route::middleware('auth:sanctum')->group(function() {
     //todo protegido
-    Route::post('/usuarios',[UsuarioController::class,'crearUsuario']);
-    Route::post('/usuarios/login/',[UsuarioController::class,'iniciarSesion']);
-    Route::put('/usuarios/{id}', [UsuarioController::class, 'modificarUsuario']);
-    //para mandar datos en la uri dinamicos no estaticos
-    Route::delete('/usuarios/{id}',[UsuarioController::class, 'eliminarUsuario']);
-    Route::get('/usuarios',[UsuarioController::class, 'obtenerUsuarios']);
+
+
 
     Route::get('/ventas',[VentaController::class, 'obtenerVentas']);
     Route::get('/ventas/{id}', [VentaController::class, 'obtenerVenta']);
@@ -40,6 +46,7 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::put('/productos/{id}', [ProductoController::class, 'actualizarProducto']);
     Route::delete('/productos/{id}', [ProductoController::class, 'eliminarProducto']);
 });
+
 
 
 Route::get('/docentes/{matricula}', [DocenteController::class, 'show']);

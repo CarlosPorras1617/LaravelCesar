@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Usuario;
-use Illuminate\Http\Request;
 use PharIo\Manifest\Email;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 
 class UsuarioController extends Controller
 {
@@ -105,9 +106,10 @@ class UsuarioController extends Controller
     {
         return [
             'nombre' => 'required|string',
-            'email' => 'required|string|email|unique:usuarios',
+            'email' => 'required|string|email',
             'password' => 'required|string|min:3',
-            'edad' => 'nullable|numeric'
+            'edad' => 'nullable|numeric',
+            'codigo_verificacion' => 'string'
         ];
     }
 
@@ -116,6 +118,59 @@ class UsuarioController extends Controller
         return [
             'email' => 'required|string|email|',
             'password' => 'required|string|min:3',
+        ];
+    }
+
+    public function generarCodigoVerificacion($id, Request $request)
+    {
+        //buscar usuario con id
+        $usuario = Usuario::find($id);
+        //return $usuario;
+        //validar que exista el usuario
+        if (!$usuario) {
+            return response([
+                'message' => 'El usuario con el correo ' . $id . ' No existe en la base de datos'
+            ], 404);
+        }
+        //si existe el usuario
+        $data = $request->validate($this->validateEmail());
+        $randomString = Str::random(8);
+        //ya esta validado los cambios
+        $usuario->update(["codigo_verificacion"=>$randomString]);
+        return response([
+            'message' => 'Se modifico el usuario con exito'
+        ], 201);
+    }
+
+    public function cambiarPassword(Request $request){
+        $data = $request->validate($this->validateCodigo());
+        $usuario = Usuario::where('email', '=', $data['email'])->where('codigo_verificacion', '=', $data['codigo_verificacion'])->first();
+        if (!$usuario) {
+            return response([
+                'message' => 'El usuario con el correo No existe en la base de datos'
+            ], 404);
+        }
+
+        //ya esta validado los cambios
+        $usuario->update(["password"=>$data['password']]);
+        $usuario->update(["codigo_verificacion"=>'']);
+        return response([
+            'message' => 'Se modifico el usuario con exito'
+        ], 201);
+    }
+    private function validateCodigo()
+    {
+        return [
+            'email'=>'required|exists:usuarios,email',
+            'codigo_verificacion'=>'required|exists:usuarios,codigo_verificacion',
+            'password'=>'required|string'
+        ];
+    }
+
+    private function validateEmail()
+    {
+        return [
+            'email'=>'required|exists:usuarios,email',
         ];
     }
 }

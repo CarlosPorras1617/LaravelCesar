@@ -13,8 +13,9 @@ class Usuario extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     protected $fillable = [
-        'name',
+        'nombre',
         'email',
         'password',
+        'codigo_verificacion'
     ];
 }
